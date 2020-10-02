@@ -42,5 +42,10 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       status(result) mustBe OK
       content mustBe user1
     }
+
+    "return 404 otherwise" in {
+      val result = route(app, FakeRequest("GET", "/api/user/id/5")).get
+      status(result) mustBe NOT_FOUND
+    }
   }
 }
