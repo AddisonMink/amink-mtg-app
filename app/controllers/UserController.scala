@@ -20,4 +20,14 @@ class UserController @Inject()(
       json = Json.toJson(GetUsersResponse(users))
     } yield Ok(json)
   }
+
+  def getUser(id: Long): Action[AnyContent] = Action.async { _ =>
+    for {
+      userOption <- dao.getUser(id)
+      response = userOption match {
+        case None => NotFound(Json.obj("message" -> s"No user with id $id exists."))
+        case Some(user) => Ok(Json.toJson(user))
+      }
+    } yield response
+  }
 }

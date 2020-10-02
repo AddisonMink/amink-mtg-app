@@ -33,4 +33,14 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       content.users must contain theSameElementsAs Seq(user1,user2)
     }
   }
+
+  "GET /api/user/id/{id}" should {
+
+    "return the user data if it exists" in {
+      val result = route(app, FakeRequest("GET", "/api/user/id/1")).get
+      val content = contentAsJson(result).as[User]
+      status(result) mustBe OK
+      content mustBe user1
+    }
+  }
 }
