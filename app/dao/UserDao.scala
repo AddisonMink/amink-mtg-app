@@ -5,8 +5,7 @@ import java.sql.ResultSet
 import com.google.inject.ImplementedBy
 import javax.inject.Inject
 import model.User
-import play.api.db.{DBApi, Database}
-
+import play.api.db.Database
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -16,7 +15,6 @@ trait UserDao {
   def getUsers: Future[Seq[User]]
 
   def getUser(id: Long): Future[Option[User]]
-
 }
 
 class UserDaoImpl @Inject()(db: Database)(implicit ec: ExecutionContext) extends UserDao {
