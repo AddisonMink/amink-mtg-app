@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class UserController @Inject()(
   val controllerComponents: ControllerComponents,
-  val dao: UserDao
+  dao: UserDao
 )(implicit ec: ExecutionContext) extends BaseController {
 
   def getUsers: Action[AnyContent] = Action.async { _ =>

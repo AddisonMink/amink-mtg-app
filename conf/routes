@@ -1,4 +1,5 @@
 ->      /api/user           routers.UserRouter
+->      /api/card           routers.CardRouter
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index

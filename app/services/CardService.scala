@@ -1,5 +1,6 @@
 package services
 
+import com.google.inject.ImplementedBy
 import javax.inject.Inject
 import models.{ApiCard, CardSet}
 import play.api.libs.json.JsArray
@@ -7,11 +8,9 @@ import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@ImplementedBy(classOf[CardServiceImpl])
 trait CardService {
-
   def fetchSet(setId: String): Future[Option[CardSet]]
-
-  def assembleBooster(setId: String): Future[Option[Seq[ApiCard]]]
 }
 
 class CardServiceImpl @Inject()(ws: WSClient)(implicit ec: ExecutionContext) extends CardService {
@@ -50,6 +49,4 @@ class CardServiceImpl @Inject()(ws: WSClient)(implicit ec: ExecutionContext) ext
       }
     } yield result
   }
-
-  override def assembleBooster(setId: String): Future[Option[Seq[ApiCard]]] = ???
 }
