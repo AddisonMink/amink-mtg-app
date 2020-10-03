@@ -1,7 +1,7 @@
 package controllers
 
-import dao.UserDao
-import mock.{MockCardService, MockUserDao}
+import dao.{CardDao, UserDao}
+import mock.{MockCardDao, MockCardService, MockUserDao}
 import models.User
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
@@ -23,6 +23,7 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
     GuiceApplicationBuilder()
       .overrides(
         bind[UserDao].toInstance(MockUserDao),
+        bind[CardDao].toInstance(MockCardDao),
         bind[CardService].toInstance(MockCardService)
       )
       .build()

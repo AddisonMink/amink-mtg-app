@@ -12,6 +12,7 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0
 libraryDependencies += ws
 libraryDependencies += "org.postgresql" % "postgresql" % "42.2.16"
 libraryDependencies += jdbc
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.2.0"
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "amink.controllers._"
