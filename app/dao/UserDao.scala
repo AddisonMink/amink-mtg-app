@@ -4,7 +4,7 @@ import java.sql.ResultSet
 
 import com.google.inject.ImplementedBy
 import javax.inject.Inject
-import model.User
+import models.User
 import play.api.db.Database
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ExecutionContext, Future}

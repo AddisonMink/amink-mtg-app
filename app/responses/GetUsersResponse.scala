@@ -1,6 +1,6 @@
 package responses
 
-import model.User
+import models.User
 import play.api.libs.json.Json
 
 case class GetUsersResponse(

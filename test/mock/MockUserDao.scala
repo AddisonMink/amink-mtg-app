@@ -1,7 +1,7 @@
 package mock
 
 import dao.UserDao
-import model.User
+import models.User
 
 import scala.concurrent.Future
 
