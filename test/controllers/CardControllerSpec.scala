@@ -51,7 +51,7 @@ class CardControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
   "PUT /api/card/booster/set/{setId}/user/{userId" should {
 
     "add a valid booster pack of cards from the given set to the given user" in {
-      val result = route(app, FakeRequest("PUT", "/api/card/booster/set/mock/user/2")).get
+      val result = route(app, FakeRequest("POST", "/api/card/booster/set/mock/user/2")).get
       status(result) mustBe OK
       val content = contentAsJson(result).as[GetBoosterResponse]
       content.cards.count(_.rarity == "Common") mustBe 10
@@ -64,7 +64,7 @@ class CardControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
     }
 
     "return 404 if an invalid setId is given" in {
-      val result = route(app, FakeRequest("PUT", "/api/card/booster/set/mock/user/0")).get
+      val result = route(app, FakeRequest("POST", "/api/card/booster/set/mock/user/0")).get
       status(result) mustBe NOT_FOUND
     }
 

@@ -15,7 +15,7 @@ object MockCardDao extends CardDao {
     Future.successful(mockCards.get(playerId))
   }
 
-  override def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Boolean] = {
+  override def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Unit] = {
     val oldCards = mockCards.get(playerId).getOrElse(Seq())
     val dbCards = cards.map(c => DbCard(playerId,c.name,c.colors,c.imageUrl))
     mockCards = mockCards + (playerId -> (oldCards ++ dbCards))

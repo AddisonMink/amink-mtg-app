@@ -30,11 +30,11 @@ class CardController @Inject()(
     }
   }
 
-  def addBooster(setId: String, userId: Long): Action[AnyContent] = Action.async { _ =>
+  def addBooster(setId: String, userId: Long, number: Int = 1): Action[AnyContent] = Action.async { _ =>
     val futureEither: EitherT[Future, String, GetBoosterResponse] = for {
       _ <- EitherT.fromOptionF(userDao.getUser(userId), s"No user with id $userId exists.")
       set <- EitherT.fromOptionF(service.fetchSet(setId), s"Could not fetch set with id $setId.")
-      cards = BoosterService.assembleBooster(set)
+      cards = (1 to number).flatMap(_ => BoosterService.assembleBooster(set))
       _ <- EitherT.liftF(cardDao.insertCards(userId, cards))
     } yield GetBoosterResponse(cards)
 
