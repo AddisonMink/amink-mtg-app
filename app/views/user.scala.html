@@ -1,0 +1,14 @@
+@(user: User)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>@user.name</title>
+</head>
+<body>
+<h1>@user.name</h1>
+@for(card <- user.cards) {
+<img src="@card.imageUrl" alt="@card.name">
+}
+</body>
+</html>
