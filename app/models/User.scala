@@ -4,7 +4,8 @@ import play.api.libs.json.Json
 
 case class User(
   id: Long,
-  name: String
+  name: String,
+  cards: Seq[DbCard] = Seq()
 )
 
 object User {

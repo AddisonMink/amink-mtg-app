@@ -45,7 +45,9 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       val result = route(app, FakeRequest("GET", "/api/user/id/1")).get
       val content = contentAsJson(result).as[User]
       status(result) mustBe OK
-      content mustBe user1
+      content.id mustBe 1
+      content.name mustBe user1.name
+      content.cards must contain theSameElementsAs MockCardDao.mockCards(1)
     }
 
     "return 404 otherwise" in {
