@@ -1,0 +1,16 @@
+@(users: Seq[User])
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>amink-mtg-app</title>
+</head>
+<body>
+<h1>Users</h1>
+<ul>
+    @for(user <- users) {
+    <li><a href="/user/@user.id">@user.name</a>></li>
+    }
+</ul>
+</body>
+</html>

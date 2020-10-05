@@ -17,6 +17,12 @@ class HomeController @Inject()(
   service: UserService
 )(implicit ec: ExecutionContext) extends BaseController {
 
+  def indexView: Action[AnyContent] = Action.async { _ =>
+    service.getUsers.map { users =>
+      Ok(views.html.index(users))
+    }
+  }
+
   def userView(id: Long): Action[AnyContent] = Action.async { _ =>
     service.getUser(id).map {
       case Left(message) => NotFound(Json.obj("message" -> message))
