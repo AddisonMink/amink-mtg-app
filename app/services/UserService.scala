@@ -24,7 +24,12 @@ class UserServiceImpl @Inject()(userDao: UserDao, cardDao: CardDao)(implicit ec:
     val eitherOption = for {
       user <- EitherT.fromOptionF(userDao.getUser(id), s"No user with id $id exists.")
       cards <- EitherT.fromOptionF(cardDao.getPlayerCards(id), s"Could not retrieve cards for user with id $id.")
-    } yield user.copy(cards = cards)
+      sortedCards = cards
+        .groupBy(_.colors)
+        .values
+        .flatMap(_.sortBy(_.name))
+        .toSeq
+    } yield user.copy(cards = sortedCards)
     eitherOption.value
   }
 }
