@@ -17,7 +17,7 @@ trait UserDao {
 
   def addUser(name: String): Future[Long]
 
-  def removeUser(id: Long): Future[Unit]
+  def removeUser(id: Long): Future[Boolean]
 }
 
 class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionContext) extends UserDao with PostgresDao[User] {
@@ -52,7 +52,7 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
     result.getLong("id")
   }
 
-  override def removeUser(id: Long): Future[Unit] = Future {
+  override def removeUser(id: Long): Future[Boolean] = Future {
     val sql = s"DELETE FROM users WHERE id = $id;"
     execute(sql)
   }

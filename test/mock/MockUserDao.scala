@@ -26,8 +26,12 @@ object MockUserDao extends UserDao {
     Future.successful(id)
   }
 
-  override def removeUser(id: Long): Future[Unit] = {
-    users = users - id.toInt
-    Future.successful()
+  override def removeUser(id: Long): Future[Boolean] = {
+    if(users.contains(id.toInt)) {
+      users = users - id.toInt
+      Future.successful(true)
+    } else {
+      Future.successful(false)
+    }
   }
 }

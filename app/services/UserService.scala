@@ -5,7 +5,7 @@ import com.google.inject.ImplementedBy
 import dao.{CardDao, UserDao}
 import javax.inject.Inject
 import models.User
-import requests.PostUserRequest
+import requests.post.PostUserRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -17,6 +17,8 @@ trait UserService {
   def getUser(id: Long): Future[Either[String,User]]
 
   def addUser(req: PostUserRequest): Future[User]
+
+  def deleteUser(id: Long): Future[Boolean]
 }
 
 class UserServiceImpl @Inject()(userDao: UserDao, cardDao: CardDao)(implicit ec: ExecutionContext) extends UserService {
@@ -38,5 +40,9 @@ class UserServiceImpl @Inject()(userDao: UserDao, cardDao: CardDao)(implicit ec:
 
   override def addUser(req: PostUserRequest): Future[User] = {
     userDao.addUser(req.name).map(id => User(id,req.name))
+  }
+
+  override def deleteUser(id: Long): Future[Boolean] = {
+    userDao.removeUser(id)
   }
 }

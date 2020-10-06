@@ -1,4 +1,4 @@
-package requests
+package requests.post
 
 import play.api.libs.json.Json
 

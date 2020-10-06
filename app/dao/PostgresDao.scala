@@ -27,7 +27,7 @@ trait PostgresDao[A] {
     }
   }
 
-  protected final def execute(sql: String): Unit = {
+  protected final def execute(sql: String): Boolean = {
     db.withConnection { conn =>
       val stmt = conn.createStatement()
       stmt.execute(createTableSql)
