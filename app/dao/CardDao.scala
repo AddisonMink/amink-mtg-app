@@ -2,12 +2,9 @@ package dao
 
 import java.sql.ResultSet
 
-import com.google.inject.ImplementedBy
 import javax.inject.Inject
-import models.User
 import play.api.db.Database
-import scala.collection.mutable.ListBuffer
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import com.google.inject.ImplementedBy
 import models.{ApiCard, DbCard}
 
@@ -18,7 +15,7 @@ trait CardDao {
 
   def getPlayerCards(playerId: Long): Future[Option[Seq[DbCard]]]
 
-  def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Unit]
+  def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Boolean]
 }
 
 class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionContext) extends CardDao with PostgresDao[DbCard] {
@@ -30,6 +27,8 @@ class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
       |   colors TEXT NOT NULL,
       |   imageUrl TEXT NOT NULL
       | );
+      |
+      | CREATE INDEX IF NOT EXISTS idx_playerId ON cards(playerId);
       |""".stripMargin
 
   override protected def readRow(set: ResultSet): DbCard = {
@@ -46,7 +45,7 @@ class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
     if(cards.nonEmpty) Some(cards) else None
   }
 
-  override def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Unit] = Future {
+  override def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Boolean] = Future {
     val prefixSQL = "INSERT INTO cards (playerId, name, colors, imageUrl) VALUES "
     val bodySql = cards
       .map(c => c.copy(name = c.name.replace("'", "''"))) // Escape single quotes
