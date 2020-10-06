@@ -9,7 +9,7 @@ import play.api.routing.sird._
 class UserRouter @Inject()(controller: UserController) extends SimpleRouter {
   override def routes: Routes = {
     case GET(p"/") => controller.getUsers
-    case GET(p"/id/$id") if id.forall(_.isDigit) => controller.getUser(id.toLong)
+    case GET(p"/$id") if id.forall(_.isDigit) => controller.getUser(id.toLong)
     case POST(p"/") => controller.postUser
     case DELETE(p"/$id") if id.forall(_.isDigit) => controller.deleteUser(id.toLong)
   }

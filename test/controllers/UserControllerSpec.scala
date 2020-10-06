@@ -45,10 +45,10 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
     }
   }
 
-  "GET /api/user/id/{id}" should {
+  "GET /api/user/{id}" should {
 
     "return the user data if it exists" in {
-      val result = route(app, FakeRequest("GET", "/api/user/id/1")).get
+      val result = route(app, FakeRequest("GET", "/api/user/1")).get
       val content = contentAsJson(result).as[User]
       status(result) mustBe OK
       content.id mustBe 1
@@ -57,7 +57,7 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
     }
 
     "return 404 otherwise" in {
-      val result = route(app, FakeRequest("GET", "/api/user/id/5")).get
+      val result = route(app, FakeRequest("GET", "/api/user/5")).get
       status(result) mustBe NOT_FOUND
     }
   }
