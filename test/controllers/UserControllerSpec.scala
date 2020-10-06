@@ -13,6 +13,8 @@ import org.scalatest.TestData
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.bind
+import play.api.libs.json.Json
+import requests.PostUserRequest
 import responses.GetUsersResponse
 import services.CardService
 
@@ -53,6 +55,26 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
     "return 404 otherwise" in {
       val result = route(app, FakeRequest("GET", "/api/user/id/5")).get
       status(result) mustBe NOT_FOUND
+    }
+  }
+
+  "POST /api/user/" should {
+
+    "add a user" in {
+      val body = Json.toJson(PostUserRequest("test"))
+      val result = route(app, FakeRequest("POST", "/api/user/").withBody(body)).get
+
+      status(result) mustBe OK
+
+      val content = contentAsJson(result).as[User]
+      content.name mustBe "test"
+    }
+
+    "report an invalid request body" in {
+      val body = Json.toJson(GetUsersResponse(Seq(user1)))
+      val result = route(app, FakeRequest("POST", "/api/user/").withBody(body)).get
+
+      status(result) mustBe BAD_REQUEST
     }
   }
 }

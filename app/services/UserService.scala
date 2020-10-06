@@ -5,6 +5,7 @@ import com.google.inject.ImplementedBy
 import dao.{CardDao, UserDao}
 import javax.inject.Inject
 import models.User
+import requests.PostUserRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,6 +15,8 @@ trait UserService {
   def getUsers: Future[Seq[User]]
 
   def getUser(id: Long): Future[Either[String,User]]
+
+  def addUser(req: PostUserRequest): Future[User]
 }
 
 class UserServiceImpl @Inject()(userDao: UserDao, cardDao: CardDao)(implicit ec: ExecutionContext) extends UserService {
@@ -31,5 +34,9 @@ class UserServiceImpl @Inject()(userDao: UserDao, cardDao: CardDao)(implicit ec:
         .toSeq
     } yield user.copy(cards = sortedCards)
     eitherOption.value
+  }
+
+  override def addUser(req: PostUserRequest): Future[User] = {
+    userDao.addUser(req.name).map(id => User(id,req.name))
   }
 }

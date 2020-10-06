@@ -3,8 +3,10 @@ package controllers
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
+import requests.PostUserRequest
 import responses.GetUsersResponse
 import services.UserService
+
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -22,5 +24,11 @@ class UserController @Inject()(
       case Left(message) => NotFound(Json.obj("message" -> message))
       case Right(user) => Ok(Json.toJson(user))
     }
+  }
+
+  def addUser: Action[PostUserRequest] = Action.async(parse.json[PostUserRequest]) { request =>
+    for {
+      user <- service.addUser(request.body)
+    } yield Ok(Json.toJson(user))
   }
 }
