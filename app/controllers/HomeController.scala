@@ -3,6 +3,7 @@ package controllers
 import javax.inject._
 import play.api.libs.json.Json
 import play.api.mvc._
+import requests.post.PostUserRequest
 import services.UserService
 
 import scala.concurrent.ExecutionContext
@@ -14,7 +15,8 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class HomeController @Inject()(
   val controllerComponents: ControllerComponents,
-  service: UserService
+  service: UserService,
+  messagesAction: MessagesActionBuilder
 )(implicit ec: ExecutionContext) extends BaseController {
 
   def indexView: Action[AnyContent] = Action.async { _ =>
@@ -28,5 +30,9 @@ class HomeController @Inject()(
       case Left(message) => NotFound(Json.obj("message" -> message))
       case Right(user) => Ok(views.html.user(user))
     }
+  }
+
+  def adminView: Action[AnyContent] = messagesAction { implicit request =>
+    Ok(views.html.admin(PostUserRequest.form))
   }
 }

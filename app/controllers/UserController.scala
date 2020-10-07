@@ -26,7 +26,7 @@ class UserController @Inject()(
     }
   }
 
-  def postUser: Action[PostUserRequest] = Action.async(parse.json[PostUserRequest]) { request =>
+  def postUser: Action[PostUserRequest] = Action.async(parse.form(PostUserRequest.form)) { request =>
     for {
       user <- service.addUser(request.body)
     } yield Created(Json.toJson(user))

@@ -8,8 +8,9 @@
 <body>
 <h1>Users</h1>
 <ul>
+    <li><a href="/admin">Admin</a></li>
     @for(user <- users) {
-    <li><a href="/user/@user.id">@user.name</a>></li>
+    <li><a href="/user/@user.id">@user.name</a></li>
     }
 </ul>
 </body>
