@@ -41,7 +41,7 @@ class UserController @Inject()(
 
   def postDeleteUser: Action[DeleteUserRequest] = Action.async(parse.form(DeleteUserRequest.form)) { request =>
     for {
-      successful <- service.deleteUser(request.body.id)
-    } yield if(successful) NoContent else NotFound
+      _ <- service.deleteUser(request.body.id)
+    } yield Ok(Json.obj("message" -> s"Deleted user with id ${request.body.id}"))
   }
 }

@@ -33,6 +33,6 @@ class HomeController @Inject()(
   }
 
   def adminView: Action[AnyContent] = messagesAction { implicit request =>
-    Ok(views.html.admin(PostUserRequest.form,PostBoosterRequest.form))
+    Ok(views.html.admin())
   }
 }
