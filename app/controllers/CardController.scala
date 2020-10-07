@@ -6,6 +6,7 @@ import javax.inject.Inject
 import models.ApiCard
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
+import requests.post.PostBoosterRequest
 import responses.GetBoosterResponse
 import services.{BoosterService, CardService}
 
@@ -30,12 +31,12 @@ class CardController @Inject()(
     }
   }
 
-  def addBooster(setId: String, userId: Long, number: Int = 1): Action[AnyContent] = Action.async { _ =>
+  def addBooster: Action[PostBoosterRequest] = Action.async(parse.form(PostBoosterRequest.form)) { implicit request =>
     val futureEither: EitherT[Future, String, GetBoosterResponse] = for {
-      _ <- EitherT.fromOptionF(userDao.getUser(userId), s"No user with id $userId exists.")
-      set <- EitherT.fromOptionF(service.fetchSet(setId), s"Could not fetch set with id $setId.")
-      cards = (1 to number).flatMap(_ => BoosterService.assembleBooster(set))
-      _ <- EitherT.liftF(cardDao.insertCards(userId, cards))
+      _ <- EitherT.fromOptionF(userDao.getUser(request.body.userId), s"No user with id ${request.body.userId} exists.")
+      set <- EitherT.fromOptionF(service.fetchSet(request.body.setId), s"Could not fetch set with id ${request.body.setId}.")
+      cards = (1 to request.body.number).flatMap(_ => BoosterService.assembleBooster(set))
+      _ <- EitherT.liftF(cardDao.insertCards(request.body.userId, cards))
     } yield GetBoosterResponse(cards)
 
     futureEither.value.map {
