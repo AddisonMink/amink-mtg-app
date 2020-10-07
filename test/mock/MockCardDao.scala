@@ -21,4 +21,12 @@ object MockCardDao extends CardDao {
     mockCards = mockCards + (playerId -> (oldCards ++ dbCards))
     Future.successful(true)
   }
+
+  override def deletePlayerCards(playerId: Long): Future[Boolean] = {
+    mockCards = mockCards.filter {
+      case (id, _) if id == playerId => false
+      case _ => true
+    }
+    Future.successful(true)
+  }
 }

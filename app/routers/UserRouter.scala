@@ -12,5 +12,6 @@ class UserRouter @Inject()(controller: UserController) extends SimpleRouter {
     case GET(p"/$id") if id.forall(_.isDigit) => controller.getUser(id.toLong)
     case POST(p"/") => controller.postUser
     case DELETE(p"/$id") if id.forall(_.isDigit) => controller.deleteUser(id.toLong)
+    case POST(p"/delete") => controller.postDeleteUser // This is so I can easily call this method from a form.
   }
 }

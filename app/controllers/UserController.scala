@@ -3,6 +3,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
+import requests.delete.DeleteUserRequest
 import requests.post.PostUserRequest
 import responses.GetUsersResponse
 import services.UserService
@@ -35,6 +36,12 @@ class UserController @Inject()(
   def deleteUser(id: Long): Action[AnyContent] = Action.async { _ =>
     for {
       successful <- service.deleteUser(id)
+    } yield if(successful) NoContent else NotFound
+  }
+
+  def postDeleteUser: Action[DeleteUserRequest] = Action.async(parse.form(DeleteUserRequest.form)) { request =>
+    for {
+      successful <- service.deleteUser(request.body.id)
     } yield if(successful) NoContent else NotFound
   }
 }

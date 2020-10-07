@@ -43,6 +43,9 @@ class UserServiceImpl @Inject()(userDao: UserDao, cardDao: CardDao)(implicit ec:
   }
 
   override def deleteUser(id: Long): Future[Boolean] = {
-    userDao.removeUser(id)
+    for {
+      s1 <- userDao.removeUser(id)
+      s2 <- cardDao.deletePlayerCards(id)
+    } yield s1 && s2
   }
 }

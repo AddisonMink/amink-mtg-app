@@ -94,6 +94,9 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
 
       val user = Await.result(MockUserDao.getUser(1), Duration(30,SECONDS))
       user mustBe None
+
+      val cards = Await.result(MockCardDao.getPlayerCards(1), Duration(30,SECONDS))
+      cards mustBe empty
     }
 
     "return 404 otherwise" in {

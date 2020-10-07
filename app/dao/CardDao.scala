@@ -16,6 +16,8 @@ trait CardDao {
   def getPlayerCards(playerId: Long): Future[Option[Seq[DbCard]]]
 
   def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Boolean]
+
+  def deletePlayerCards(playerId: Long): Future[Boolean]
 }
 
 class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionContext) extends CardDao with PostgresDao[DbCard] {
@@ -52,6 +54,11 @@ class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
       .map(c => s"($playerId, '${c.name}', '${c.colors.mkString(",")}', '${c.imageUrl}')")
       .mkString(", ")
     val sql = prefixSQL ++ bodySql ++ ";"
+    execute(sql)
+  }
+
+  override def deletePlayerCards(playerId: Long): Future[Boolean] = Future {
+    val sql = s"DELETE FROM cards WHERE playerId = $playerId;"
     execute(sql)
   }
 }
