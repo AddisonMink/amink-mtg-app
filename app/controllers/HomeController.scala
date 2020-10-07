@@ -3,7 +3,7 @@ package controllers
 import javax.inject._
 import play.api.libs.json.Json
 import play.api.mvc._
-import requests.post.PostUserRequest
+import requests.post.{PostBoosterRequest, PostUserRequest}
 import services.UserService
 
 import scala.concurrent.ExecutionContext
@@ -33,6 +33,6 @@ class HomeController @Inject()(
   }
 
   def adminView: Action[AnyContent] = messagesAction { implicit request =>
-    Ok(views.html.admin(PostUserRequest.form))
+    Ok(views.html.admin(PostUserRequest.form,PostBoosterRequest.form))
   }
 }

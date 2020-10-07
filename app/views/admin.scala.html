@@ -1,4 +1,4 @@
-@(userForm: Form[requests.post.PostUserRequest])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+@(userForm: Form[requests.post.PostUserRequest], boosterForm: Form[requests.post.PostBoosterRequest])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 
 @import helper._
 
@@ -13,8 +13,22 @@
 <h2>Add User</h2>
 <form action="/api/user/" method="POST">
     @CSRF.formField
+    <label>Name </label>
     <input type="text" name="name">
     <input type="submit" value="Submit">
 </form>
+
+<h2>Add BoosterPack</h2>
+<form action="/api/card/booster/" method="POST">
+    @CSRF.formField
+    <label>User ID</label>
+    <input type="number" name="userId">
+    <label>Set ID</label>
+    <input type="text" name="setId">
+    <label>Number </label>
+    <input type="number" name="number" value="1">
+    <input type="submit" value="Submit">
+</form>
+
 </body>
 </html>
