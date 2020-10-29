@@ -49,7 +49,7 @@ class CardControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
 
       val user = Await.result(userDao.getUser(2), Duration(5,MINUTES)).get
       user.batch mustBe 2
-      val cards = Await.result(cardDao.getPlayerCards(2), Duration(5,MINUTES)).get
+      val cards = Await.result(cardDao.getUserCards(2), Duration(5,MINUTES)).get
       val dbCards = content.cards.map(c => DbCard(2,c.name,c.colors,c.imageUrl,2))
       cards must contain theSameElementsAs dbCards
     }

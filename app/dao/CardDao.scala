@@ -13,11 +13,13 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[CardDaoImpl])
 trait CardDao {
 
-  def getPlayerCards(playerId: Long): Future[Option[Seq[DbCard]]]
+  def getUserCards(userId: Long): Future[Option[Seq[DbCard]]]
 
-  def insertCards(playerId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean]
+  def getUserCards(userId: Long, batch: Int): Future[Option[Seq[DbCard]]]
 
-  def deletePlayerCards(playerId: Long): Future[Boolean]
+  def insertCards(userId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean]
+
+  def deleteUserCards(userId: Long): Future[Boolean]
 }
 
 class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionContext) extends CardDao with PostgresDao[DbCard] {
@@ -43,24 +45,30 @@ class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
     DbCard(id,name,colors,url,batch)
   }
 
-  override def getPlayerCards(playerId: Long): Future[Option[Seq[DbCard]]] = Future {
-    val sql = s"SELECT * FROM cards WHERE playerId = $playerId;"
+  override def getUserCards(userId: Long): Future[Option[Seq[DbCard]]] = Future {
+    val sql = s"SELECT * FROM cards WHERE playerId = $userId;"
     val cards = readAll(query(sql))
     if(cards.nonEmpty) Some(cards) else None
   }
 
-  override def insertCards(playerId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean] = Future {
+  override def getUserCards(userId: Long, batch: Int): Future[Option[Seq[DbCard]]] = Future {
+    val sql = s"SELECT * FROM cards WHERE playerId = $userId AND batch = $batch;"
+    val cards = readAll(query(sql))
+    if(cards.nonEmpty) Some(cards) else None
+  }
+
+  override def insertCards(userId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean] = Future {
     val prefixSQL = "INSERT INTO cards (playerId, name, colors, imageUrl, batch) VALUES "
     val bodySql = cards
       .map(c => c.copy(name = c.name.replace("'", "''"))) // Escape single quotes
-      .map(c => s"($playerId, '${c.name}', '${c.colors.mkString(",")}', '${c.imageUrl}', $batch)")
+      .map(c => s"($userId, '${c.name}', '${c.colors.mkString(",")}', '${c.imageUrl}', $batch)")
       .mkString(", ")
     val sql = prefixSQL ++ bodySql ++ ";"
     execute(sql)
   }
 
-  override def deletePlayerCards(playerId: Long): Future[Boolean] = Future {
-    val sql = s"DELETE FROM cards WHERE playerId = $playerId;"
+  override def deleteUserCards(userId: Long): Future[Boolean] = Future {
+    val sql = s"DELETE FROM cards WHERE playerId = $userId;"
     execute(sql)
   }
 }

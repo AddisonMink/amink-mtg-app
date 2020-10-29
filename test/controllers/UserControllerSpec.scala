@@ -67,6 +67,23 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
     }
   }
 
+  "GET /api/user/{id}/latest" should {
+
+    "return the user data if it exists, including only the most recent batch of cards." in {
+      val result = route(app, FakeRequest("GET", "/api/user/1/latest")).get
+      val content = contentAsJson(result).as[User]
+      status(result) mustBe OK
+      content.id mustBe 1
+      content.name mustBe user1.name
+      content.cards must contain theSameElementsAs cardDao.mockCards(1).filter(_.batch == user1.batch)
+    }
+
+    "return 404 otherwise" in {
+      val result = route(app, FakeRequest("GET", "/api/user/5/latest")).get
+      status(result) mustBe NOT_FOUND
+    }
+  }
+
   "POST /api/user/" should {
 
     "add a user" in {
@@ -79,7 +96,7 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       content.name mustBe "test"
 
       val user = Await.result(userDao.getUser(content.id), Duration(30,SECONDS))
-      user mustBe Some(User(content.id,content.name, batch = 1))
+      user mustBe Some(User(content.id,content.name, batch = content.batch))
     }
 
     "report an invalid request body" in {
@@ -100,7 +117,7 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       val user = Await.result(userDao.getUser(1), Duration(30,SECONDS))
       user mustBe None
 
-      val cards = Await.result(cardDao.getPlayerCards(1), Duration(30,SECONDS))
+      val cards = Await.result(cardDao.getUserCards(1), Duration(30,SECONDS))
       cards mustBe empty
     }
 

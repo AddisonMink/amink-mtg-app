@@ -19,11 +19,11 @@ class MockUserDao extends UserDao {
     Future.successful(users.get(id.toInt))
   }
 
-  override def addUser(name: String): Future[Long] = {
+  override def addUser(name: String): Future[User] = {
     val id = users.keys.max + 1
     val user = User(id,name, batch = 1)
     users = users + (id -> user)
-    Future.successful(id)
+    Future.successful(user)
   }
 
   override def removeUser(id: Long): Future[Boolean] = {

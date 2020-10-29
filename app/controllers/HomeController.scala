@@ -32,6 +32,13 @@ class HomeController @Inject()(
     }
   }
 
+  def userLatestView(id: Long): Action[AnyContent] = Action.async { _ =>
+    service.getUserLatest(id).map {
+      case Left(message) => NotFound(Json.obj("message" -> message))
+      case Right(user) => Ok(views.html.user(user))
+    }
+  }
+
   def adminView: Action[AnyContent] = messagesAction { implicit request =>
     Ok(views.html.admin())
   }

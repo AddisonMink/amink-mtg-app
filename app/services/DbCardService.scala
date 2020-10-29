@@ -13,6 +13,10 @@ trait DbCardService {
 
   def getUserCards(id: Long): Future[Option[Seq[DbCard]]]
 
+  def getUserCards(id: Long, batch: Int): Future[Option[Seq[DbCard]]]
+
+  def deleteUserCards(id: Long): Future[Boolean]
+
   def giveUserBoosters(userId: Long, setId: String, num: Int = 1): Future[Either[String,Seq[ApiCard]]]
 }
 
@@ -22,7 +26,11 @@ class DbCardServiceImpl @Inject()(
   userDao: UserDao)
   (implicit ec: ExecutionContext) extends DbCardService {
 
-  override def getUserCards(id: Long): Future[Option[Seq[DbCard]]] = cardDao.getPlayerCards(id)
+  override def getUserCards(id: Long): Future[Option[Seq[DbCard]]] = cardDao.getUserCards(id)
+
+  override def getUserCards(id: Long, batch: Int): Future[Option[Seq[DbCard]]] = cardDao.getUserCards(id,batch)
+
+  override def deleteUserCards(id: Long): Future[Boolean] = cardDao.deleteUserCards(id)
 
   override def giveUserBoosters(userId: Long, setId: String, num: Int): Future[Either[String,Seq[ApiCard]]] = {
     val eitherT: EitherT[Future, String, Seq[ApiCard]] = for {

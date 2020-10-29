@@ -1,15 +1,12 @@
 package controllers
-
-import cats.data.{EitherT, OptionT}
-import dao.{CardDao, UserDao}
 import javax.inject.Inject
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
+import play.api.mvc.{Action, BaseController, ControllerComponents}
 import requests.post.PostBoosterRequest
 import responses.GetBoosterResponse
-import services.{ApiCardService, BoosterService, DbCardService}
+import services.DbCardService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class CardController @Inject()(
   val controllerComponents: ControllerComponents,
@@ -23,7 +20,7 @@ class CardController @Inject()(
 
     service.giveUserBoosters(userId,setId,num).map {
       case Left(message) => NotFound(Json.obj("message" -> message))
-      case Right(value) => NoContent
+      case Right(value) => Ok(Json.toJson(GetBoosterResponse(value)))
     }
   }
 }

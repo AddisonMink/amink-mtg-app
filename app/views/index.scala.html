@@ -10,7 +10,7 @@
 <ul>
     <li><a href="/admin">Admin</a></li>
     @for(user <- users) {
-    <li><a href="/user/@user.id">@user.name</a></li>
+    <li><a href="/user/@user.id">@user.name</a>  <a href="/user/@user.id/latest">(latest)</a></li>
     }
 </ul>
 </body>

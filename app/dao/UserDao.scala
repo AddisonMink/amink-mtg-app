@@ -15,7 +15,7 @@ trait UserDao {
 
   def getUser(id: Long): Future[Option[User]]
 
-  def addUser(name: String): Future[Long]
+  def addUser(name: String): Future[User]
 
   def removeUser(id: Long): Future[Boolean]
 
@@ -49,11 +49,10 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
     readAll(query(sql)).headOption
   }
 
-  override def addUser(name: String): Future[Long] = Future {
-    val sql = s"INSERT INTO users (name) VALUES ('$name', 0) RETURNING id;"
+  override def addUser(name: String): Future[User] = Future {
+    val sql = s"INSERT INTO users (name, batch) VALUES ('$name', 0) RETURNING *;"
     val result = query(sql)
-    result.next()
-    result.getLong("id")
+    readAll(query(sql)).head
   }
 
   override def removeUser(id: Long): Future[Boolean] = Future {

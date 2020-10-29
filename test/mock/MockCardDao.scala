@@ -11,20 +11,24 @@ class MockCardDao(userDao: MockUserDao) extends CardDao {
     userDao.user1.id -> Seq(DbCard(1,"mock1",Seq(),"",1), DbCard(1,"mock2",Seq(),"",2))
   )
 
-  override def getPlayerCards(playerId: Long): Future[Option[Seq[DbCard]]] = {
-    Future.successful(mockCards.get(playerId))
+  override def getUserCards(userId: Long): Future[Option[Seq[DbCard]]] = {
+    Future.successful(mockCards.get(userId))
   }
 
-  override def insertCards(playerId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean] = {
-    val oldCards = mockCards.getOrElse(playerId, Seq())
-    val dbCards = cards.map(c => DbCard(playerId,c.name,c.colors,c.imageUrl,batch))
-    mockCards = mockCards + (playerId -> (oldCards ++ dbCards))
+  override def getUserCards(userId: Long, batch: Int): Future[Option[Seq[DbCard]]] = {
+    Future.successful(mockCards.get(userId).map(_.filter(_.batch == batch)))
+  }
+
+  override def insertCards(userId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean] = {
+    val oldCards = mockCards.getOrElse(userId, Seq())
+    val dbCards = cards.map(c => DbCard(userId,c.name,c.colors,c.imageUrl,batch))
+    mockCards = mockCards + (userId -> (oldCards ++ dbCards))
     Future.successful(true)
   }
 
-  override def deletePlayerCards(playerId: Long): Future[Boolean] = {
+  override def deleteUserCards(userId: Long): Future[Boolean] = {
     mockCards = mockCards.filter {
-      case (id, _) if id == playerId => false
+      case (id, _) if id == userId => false
       case _ => true
     }
     Future.successful(true)

@@ -27,6 +27,13 @@ class UserController @Inject()(
     }
   }
 
+  def getUserLatest(id: Long): Action[AnyContent] = Action.async { _ =>
+    service.getUserLatest(id).map {
+      case Left(message) => NotFound(Json.obj("message" -> message))
+      case Right(user) => Ok(Json.toJson(user))
+    }
+  }
+
   def postUser: Action[PostUserRequest] = Action.async(parse.form(PostUserRequest.form)) { request =>
     for {
       user <- service.addUser(request.body)
