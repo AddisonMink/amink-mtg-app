@@ -1,8 +1,8 @@
 package controllers
 
 import dao.{CardDao, UserDao}
-import mock.{MockCardDao, MockCardService, MockUserDao}
-import models.{DbCard, User}
+import mock.{MockApiCardService, MockCardDao, MockUserDao}
+import models.DbCard
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.test.Injecting
@@ -15,7 +15,7 @@ import play.api.inject.bind
 import play.api.libs.json.Json
 import requests.post.PostBoosterRequest
 import responses.GetBoosterResponse
-import services.CardService
+import services.ApiCardService
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -23,31 +23,17 @@ import scala.concurrent.duration.MINUTES
 
 class CardControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting {
 
+  val userDao = new MockUserDao()
+  val cardDao = new MockCardDao(userDao)
+
   implicit override def newAppForTest(testData: TestData): Application = {
     GuiceApplicationBuilder()
       .overrides(
-        bind[UserDao].toInstance(MockUserDao),
-        bind[CardDao].toInstance(MockCardDao),
-        bind[CardService].toInstance(MockCardService)
+        bind[UserDao].toInstance(userDao),
+        bind[CardDao].toInstance(cardDao),
+        bind[ApiCardService].toInstance(MockApiCardService)
       )
       .build()
-  }
-
-  "GET /api/card/booster/set/{setId}" should {
-
-    "return a valid booster pack" in {
-      val result = route(app, FakeRequest("GET", "/api/card/booster/set/mock")).get
-      status(result) mustBe OK
-      val content = contentAsJson(result).as[GetBoosterResponse]
-      content.cards.count(_.rarity == "Common") mustBe 10
-      content.cards.count(_.rarity == "Uncommon") mustBe 3
-      content.cards.length mustBe 14
-    }
-
-    "return 404 if an invalid setId is given" in {
-      val result = route(app, FakeRequest("GET", "/api/card/booster/set/invalid_set_name")).get
-      status(result) mustBe NOT_FOUND
-    }
   }
 
   "POST /api/card/booster/" should {
@@ -61,8 +47,10 @@ class CardControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       content.cards.count(_.rarity == "Uncommon") mustBe 3
       content.cards.length mustBe 14
 
-      val cards = Await.result(MockCardDao.getPlayerCards(2), Duration(5,MINUTES)).get
-      val dbCards = content.cards.map(c => DbCard(2,c.name,c.colors,c.imageUrl))
+      val user = Await.result(userDao.getUser(2), Duration(5,MINUTES)).get
+      user.batch mustBe 2
+      val cards = Await.result(cardDao.getPlayerCards(2), Duration(5,MINUTES)).get
+      val dbCards = content.cards.map(c => DbCard(2,c.name,c.colors,c.imageUrl,2))
       cards must contain theSameElementsAs dbCards
     }
 

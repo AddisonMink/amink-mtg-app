@@ -5,7 +5,7 @@ import models.User
 
 import scala.concurrent.Future
 
-object MockUserDao extends UserDao {
+class MockUserDao extends UserDao {
 
   val user1 = User(1,"Addison", batch = 1)
   val user2 = User(2,"Carter", batch = 1)
@@ -32,6 +32,17 @@ object MockUserDao extends UserDao {
       Future.successful(true)
     } else {
       Future.successful(false)
+    }
+  }
+
+  override def incrementBatch(id: Long): Future[Option[User]] = {
+    if(users.contains(id.toInt)) {
+      val user = users(id.toInt)
+      val newUser = user.copy(batch = user.batch + 1)
+      users = users + (id.toInt -> newUser)
+      Future.successful(Some(newUser))
+    } else {
+      Future.successful(None)
     }
   }
 }

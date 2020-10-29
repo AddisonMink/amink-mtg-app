@@ -6,7 +6,8 @@ case class DbCard(
   playerId: Long,
   name: String,
   colors: Seq[String],
-  imageUrl: String
+  imageUrl: String,
+  batch: Int
 )
 
 object DbCard {

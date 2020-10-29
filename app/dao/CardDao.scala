@@ -15,7 +15,7 @@ trait CardDao {
 
   def getPlayerCards(playerId: Long): Future[Option[Seq[DbCard]]]
 
-  def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Boolean]
+  def insertCards(playerId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean]
 
   def deletePlayerCards(playerId: Long): Future[Boolean]
 }
@@ -27,7 +27,8 @@ class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
       |   playerId INT NOT NULL,
       |   name varchar(100) NOT NULL,
       |   colors TEXT NOT NULL,
-      |   imageUrl TEXT NOT NULL
+      |   imageUrl TEXT NOT NULL,
+      |   batch INT NOT NULL
       | );
       |
       | CREATE INDEX IF NOT EXISTS idx_playerId ON cards(playerId);
@@ -38,7 +39,8 @@ class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
     val name = set.getString("name")
     val colors = set.getString("colors").split(",").toSeq
     val url = set.getString("imageUrl")
-    DbCard(id,name,colors,url)
+    val batch = set.getInt("batch")
+    DbCard(id,name,colors,url,batch)
   }
 
   override def getPlayerCards(playerId: Long): Future[Option[Seq[DbCard]]] = Future {
@@ -47,11 +49,11 @@ class CardDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
     if(cards.nonEmpty) Some(cards) else None
   }
 
-  override def insertCards(playerId: Long, cards: Seq[ApiCard]): Future[Boolean] = Future {
-    val prefixSQL = "INSERT INTO cards (playerId, name, colors, imageUrl) VALUES "
+  override def insertCards(playerId: Long, batch: Int, cards: Seq[ApiCard]): Future[Boolean] = Future {
+    val prefixSQL = "INSERT INTO cards (playerId, name, colors, imageUrl, batch) VALUES "
     val bodySql = cards
       .map(c => c.copy(name = c.name.replace("'", "''"))) // Escape single quotes
-      .map(c => s"($playerId, '${c.name}', '${c.colors.mkString(",")}', '${c.imageUrl}')")
+      .map(c => s"($playerId, '${c.name}', '${c.colors.mkString(",")}', '${c.imageUrl}', $batch)")
       .mkString(", ")
     val sql = prefixSQL ++ bodySql ++ ";"
     execute(sql)

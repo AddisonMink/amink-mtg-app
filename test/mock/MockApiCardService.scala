@@ -1,11 +1,11 @@
 package mock
 
 import models.{ApiCard, CardSet}
-import services.CardService
+import services.ApiCardService
 
 import scala.concurrent.Future
 
-object MockCardService extends CardService {
+object MockApiCardService extends ApiCardService {
 
   val commonCard = ApiCard("commonCard", "", "Common", Seq(), "")
   val uncommonCard = ApiCard("uncommonCard", "", "Uncommon", Seq(), "")

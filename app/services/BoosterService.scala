@@ -13,4 +13,8 @@ object BoosterService {
     val cards = rares ++ uncommons ++ commons
     cards.groupBy(_.colors).values.flatten.toSeq
   }
+
+  def assembleBoosters(set: CardSet, num: Int): Seq[ApiCard] = {
+    (0 until num).flatMap(_ => assembleBooster(set))
+  }
 }

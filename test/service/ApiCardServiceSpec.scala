@@ -3,20 +3,20 @@ package service
 import org.scalatest.time.Minutes
 import org.scalatestplus.play.PlaySpec
 import play.api.test.WsTestClient
-import services.{CardService, CardServiceImpl}
+import services.{ApiCardService, ApiCardServiceImpl}
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.MINUTES
 
-class CardServiceSpec extends PlaySpec {
+class ApiCardServiceSpec extends PlaySpec {
 
   "CardService.getSpec" should {
 
     "return all non-basic land cards in a set, partitioned by rarity" in {
       WsTestClient.withClient { client =>
-        val service = new CardServiceImpl(client)
+        val service = new ApiCardServiceImpl(client)
         val result = Await.result(service.fetchSet("ODY"), Duration(5,MINUTES)).get
         result.id mustBe "ODY"
         result.commons.length mustBe 110

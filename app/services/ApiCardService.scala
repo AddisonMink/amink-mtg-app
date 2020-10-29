@@ -8,12 +8,12 @@ import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@ImplementedBy(classOf[CardServiceImpl])
-trait CardService {
+@ImplementedBy(classOf[ApiCardServiceImpl])
+trait ApiCardService {
   def fetchSet(setId: String): Future[Option[CardSet]]
 }
 
-class CardServiceImpl @Inject()(ws: WSClient)(implicit ec: ExecutionContext) extends CardService {
+class ApiCardServiceImpl @Inject()(ws: WSClient)(implicit ec: ExecutionContext) extends ApiCardService {
 
   private val basicLands = Seq("Swamp", "Plains", "Forest", "Mountain", "Island")
 

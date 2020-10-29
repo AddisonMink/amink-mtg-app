@@ -8,7 +8,6 @@ import play.api.routing.sird._
 
 class CardRouter @Inject()(controller: CardController) extends SimpleRouter {
   override def routes: Routes = {
-    case GET(p"/booster/set/$setId") => controller.getBooster(setId)
     case POST(p"/booster/")  => controller.addBooster
   }
 }

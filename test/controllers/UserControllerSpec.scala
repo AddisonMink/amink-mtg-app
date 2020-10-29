@@ -1,14 +1,13 @@
 package controllers
 
 import dao.{CardDao, UserDao}
-import mock.{MockCardDao, MockCardService, MockUserDao}
+import mock.{MockApiCardService, MockCardDao, MockUserDao}
 import models.User
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.test.Injecting
 import play.api.test._
 import play.api.test.Helpers._
-import mock.MockUserDao._
 import org.scalatest.TestData
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -16,7 +15,7 @@ import play.api.inject.bind
 import play.api.libs.json.Json
 import requests.post.PostUserRequest
 import responses.GetUsersResponse
-import services.CardService
+import services.ApiCardService
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -25,12 +24,18 @@ import scala.concurrent.duration.SECONDS
 
 class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting {
 
+  val userDao = new MockUserDao()
+  val cardDao = new MockCardDao(userDao)
+
+  val user1 = userDao.user1
+  val user2 = userDao.user2
+
   implicit override def newAppForTest(testData: TestData): Application = {
     GuiceApplicationBuilder()
       .overrides(
-        bind[UserDao].toInstance(MockUserDao),
-        bind[CardDao].toInstance(MockCardDao),
-        bind[CardService].toInstance(MockCardService)
+        bind[UserDao].toInstance(userDao),
+        bind[CardDao].toInstance(cardDao),
+        bind[ApiCardService].toInstance(MockApiCardService)
       )
       .build()
   }
@@ -53,7 +58,7 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       status(result) mustBe OK
       content.id mustBe 1
       content.name mustBe user1.name
-      content.cards must contain theSameElementsAs MockCardDao.mockCards(1)
+      content.cards must contain theSameElementsAs cardDao.mockCards(1)
     }
 
     "return 404 otherwise" in {
@@ -73,7 +78,7 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       val content = contentAsJson(result).as[User]
       content.name mustBe "test"
 
-      val user = Await.result(MockUserDao.getUser(content.id), Duration(30,SECONDS))
+      val user = Await.result(userDao.getUser(content.id), Duration(30,SECONDS))
       user mustBe Some(User(content.id,content.name, batch = 1))
     }
 
@@ -92,10 +97,10 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
 
       status(result) mustBe NO_CONTENT
 
-      val user = Await.result(MockUserDao.getUser(1), Duration(30,SECONDS))
+      val user = Await.result(userDao.getUser(1), Duration(30,SECONDS))
       user mustBe None
 
-      val cards = Await.result(MockCardDao.getPlayerCards(1), Duration(30,SECONDS))
+      val cards = Await.result(cardDao.getPlayerCards(1), Duration(30,SECONDS))
       cards mustBe empty
     }
 

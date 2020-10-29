@@ -18,6 +18,8 @@ trait UserDao {
   def addUser(name: String): Future[Long]
 
   def removeUser(id: Long): Future[Boolean]
+
+  def incrementBatch(id: Long): Future[Option[User]]
 }
 
 class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionContext) extends UserDao with PostgresDao[User] {
@@ -25,7 +27,8 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
   protected val createTableSql =
     """ CREATE TABLE IF NOT EXISTS users (
       |   id SERIAL PRIMARY KEY,
-      |   name varchar(100) NOT NULL
+      |   name varchar(100) NOT NULL,
+      |   batch integer NOT NULL
       | );
       |""".stripMargin
 
@@ -47,7 +50,7 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
   }
 
   override def addUser(name: String): Future[Long] = Future {
-    val sql = s"INSERT INTO users (name) VALUES ('$name', 1) RETURNING id;"
+    val sql = s"INSERT INTO users (name) VALUES ('$name', 0) RETURNING id;"
     val result = query(sql)
     result.next()
     result.getLong("id")
@@ -56,5 +59,10 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
   override def removeUser(id: Long): Future[Boolean] = Future {
     val sql = s"DELETE FROM users WHERE id = $id;"
     execute(sql)
+  }
+
+  override def incrementBatch(id: Long): Future[Option[User]] = Future {
+    val sql = s"UPDATE users SET batch = (batch + 1) WHERE id = $id RETURNING *;"
+    readAll(query(sql)).headOption
   }
 }
