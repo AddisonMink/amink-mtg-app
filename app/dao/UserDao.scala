@@ -51,7 +51,6 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
 
   override def addUser(name: String): Future[User] = Future {
     val sql = s"INSERT INTO users (name, batch) VALUES ('$name', 0) RETURNING *;"
-    val result = query(sql)
     readAll(query(sql)).head
   }
 
