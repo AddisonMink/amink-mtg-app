@@ -32,7 +32,8 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
   override protected def readRow(set: ResultSet): User = {
     val id = set.getLong("id")
     val name = set.getString("name")
-    User(id,name)
+    val batch = set.getInt("batch")
+    User(id,name, batch = batch)
   }
 
   override def getUsers: Future[Seq[User]] = Future {
@@ -46,7 +47,7 @@ class UserDaoImpl @Inject()(protected val db: Database)(implicit ec: ExecutionCo
   }
 
   override def addUser(name: String): Future[Long] = Future {
-    val sql = s"INSERT INTO users (name) VALUES ('$name') RETURNING id;"
+    val sql = s"INSERT INTO users (name) VALUES ('$name', 1) RETURNING id;"
     val result = query(sql)
     result.next()
     result.getLong("id")

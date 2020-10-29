@@ -7,8 +7,8 @@ import scala.concurrent.Future
 
 object MockUserDao extends UserDao {
 
-  val user1 = User(1,"Addison")
-  val user2 = User(2,"Carter")
+  val user1 = User(1,"Addison", batch = 1)
+  val user2 = User(2,"Carter", batch = 1)
   private var users = Map(1 -> user1, 2 -> user2)
 
   override def getUsers: Future[Seq[User]] = {
@@ -21,7 +21,7 @@ object MockUserDao extends UserDao {
 
   override def addUser(name: String): Future[Long] = {
     val id = users.keys.max + 1
-    val user = User(id,name)
+    val user = User(id,name, batch = 1)
     users = users + (id -> user)
     Future.successful(id)
   }

@@ -39,7 +39,7 @@ class UserServiceImpl @Inject()(userDao: UserDao, cardDao: CardDao)(implicit ec:
   }
 
   override def addUser(req: PostUserRequest): Future[User] = {
-    userDao.addUser(req.name).map(id => User(id,req.name))
+    userDao.addUser(req.name).map(id => User(id,req.name, batch = 1))
   }
 
   override def deleteUser(id: Long): Future[Boolean] = {

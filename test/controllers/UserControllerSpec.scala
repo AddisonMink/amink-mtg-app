@@ -74,7 +74,7 @@ class UserControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       content.name mustBe "test"
 
       val user = Await.result(MockUserDao.getUser(content.id), Duration(30,SECONDS))
-      user mustBe Some(User(content.id,content.name))
+      user mustBe Some(User(content.id,content.name, batch = 1))
     }
 
     "report an invalid request body" in {
